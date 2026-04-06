@@ -5,15 +5,28 @@ const path = require("path");
 
 const profilesFile = path.join(__dirname, "../data/profiles.json");
 
+// ✅ Safe read (prevents crash on Render)
 function getProfiles() {
-  return JSON.parse(fs.readFileSync(profilesFile, "utf-8"));
+  try {
+    if (!fs.existsSync(profilesFile)) return [];
+    const data = fs.readFileSync(profilesFile, "utf-8");
+    return data ? JSON.parse(data) : [];
+  } catch (err) {
+    console.error("Error reading profiles:", err);
+    return [];
+  }
 }
 
+// ✅ Safe write
 function saveProfiles(profiles) {
-  fs.writeFileSync(profilesFile, JSON.stringify(profiles, null, 2));
+  try {
+    fs.writeFileSync(profilesFile, JSON.stringify(profiles, null, 2));
+  } catch (err) {
+    console.error("Error saving profiles:", err);
+  }
 }
 
-// ─── Save / Update Profile ────────────────────────────────────────────────────
+// ─── Save / Update Profile ─────────────────────────────────
 router.post("/profile", (req, res) => {
   const {
     userId, name, email, phone, department, designation,
@@ -27,10 +40,6 @@ router.post("/profile", (req, res) => {
 
   const profiles = getProfiles();
   const existingIndex = profiles.findIndex((p) => p.userId === userId);
-
-  // FIX Issue 1 (hidden cause) + Issue 3:
-  // OLD CODE had status: "PENDING" hardcoded — this wiped REJECTED/VERIFIED on every edit.
-  // FIX: preserve existing status, remarks, documents when updating.
   const existing = existingIndex !== -1 ? profiles[existingIndex] : null;
 
   const profileData = {
@@ -54,7 +63,7 @@ router.post("/profile", (req, res) => {
   res.json({ message: "Profile saved successfully!" });
 });
 
-// ─── Get Profile by userId ────────────────────────────────────────────────────
+// ─── Get Profile ───────────────────────────────────────────
 router.get("/profile/:userId", (req, res) => {
   const profiles = getProfiles();
   const profile = profiles.find((p) => p.userId === req.params.userId);
@@ -66,12 +75,19 @@ router.get("/profile/:userId", (req, res) => {
   res.json(profile);
 });
 
-// ─── FIX Issue 2: Check if profile exists (used after login) ─────────────────
-// Frontend calls this after login. If exists → status.html, else → university.html
+// ─── ✅ Profile Check (IMPORTANT FIX) ───────────────────────
 router.get("/profile-check/:userId", (req, res) => {
-  const profiles = getProfiles();
-  const profile = profiles.find((p) => p.userId === req.params.userId);
-  res.json({ exists: !!profile });
+  try {
+    const profiles = getProfiles();
+    const exists = profiles.some((p) => p.userId === req.params.userId);
+
+    console.log("PROFILE CHECK:", req.params.userId, "→", exists); // debug
+
+    res.json({ exists });
+  } catch (err) {
+    console.error("Profile check error:", err);
+    res.status(500).json({ exists: false });
+  }
 });
 
 module.exports = router;
