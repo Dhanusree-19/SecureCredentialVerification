@@ -19,5 +19,26 @@
     "email": "dhanudhanu1903@gmail.com",
     "password": "$2a$10$.Gt9.NUH5TVhTN8t0X62Lu1UvNRaG9LTfYx0wNOTaHl.whnrrpxlq",
     "role": "FACULTY"
+  },
+  {
+    "id": "1775455044413",
+    "name": "Dhanu",
+    "email": "dhanusreekannappan@gmail.com",
+    "password": "$2a$10$u3Y3OfM7e2WwDL3Kssvwu.eoIBEdw2PSIQTySoIlMZLkyBUSpVbMq",
+    "role": "FACULTY"
+  },
+  {
+    "id": "1775463573182",
+    "name": "Dhanu",
+    "email": "dhanu@gmail.com",
+    "password": "$2a$10$/VTvDTwu6lg3BFWb.eGPR.cdn3xIk.XdcU1PKh5qM6rOWtzrpVgq6",
+    "role": "FACULTY"
+  },
+  {
+    "id": "1775463704319",
+    "name": "jeevitha",
+    "email": "jeevitha@gmail.com",
+    "password": "$2a$10$kicA5JqoBTBF20lifY8pPOWs1Wv4poUyYWJAtAcRBaS2kfL00MjxW",
+    "role": "ADMIN"
   }
 ]

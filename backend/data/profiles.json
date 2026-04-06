@@ -42,5 +42,27 @@
     },
     "createdAt": "2026-04-06T01:59:05.995Z",
     "updatedAt": "2026-04-06T01:59:51.305Z"
+  },
+  {
+    "userId": "1775455044413",
+    "name": "Dhanu",
+    "email": "dhanusreekannappan@gmail.com",
+    "phone": "6369569998",
+    "department": "Information Technology",
+    "designation": "Assistant professor",
+    "university": "IIT Madras",
+    "highestQualification": "M.E / M.Tech",
+    "universityName": "IIT",
+    "yearOfCompletion": "2023",
+    "specialization": "ML",
+    "status": "PENDING",
+    "remarks": "",
+    "documents": {
+      "degreeCertificate": "1775455044413_degreeCertificate_1775455099632.pdf",
+      "idProof": "1775455044413_idProof_1775455099635.pdf",
+      "experienceCertificate": "1775455044413_experienceCertificate_1775455099643.pdf"
+    },
+    "createdAt": "2026-04-06T05:58:00.039Z",
+    "updatedAt": "2026-04-06T05:58:19.654Z"
   }
 ]
