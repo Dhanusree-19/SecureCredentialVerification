@@ -1,11 +1,11 @@
-# 🎓 Secure Faculty Credential Verification System
+# Secure Faculty Credential Verification System
 
 A full-stack web app for verifying faculty credentials.
 Built with Node.js + Express (backend) and plain HTML/CSS/JS (frontend).
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 SecureFacultyVerification/
@@ -39,7 +39,7 @@ SecureFacultyVerification/
 
 ---
 
-## 🚀 How to Run (Step by Step)
+##  How to Run (Step by Step)
 
 ### Step 1 — Install Node.js
 Download and install Node.js from: https://nodejs.org
@@ -96,7 +96,7 @@ Also update the `from:` field below it.
 4. Create an app password for "Mail"
 5. Copy the 16-character password and paste it above
 
-> ⚠️ If you skip this step, the app still works — email just won't send (it logs the error and continues).
+> If you skip this step, the app still works — email just won't send (it logs the error and continues).
 
 ---
 
@@ -108,8 +108,8 @@ node server.js
 
 You should see:
 ```
-✅ Server running at http://localhost:3000
-📁 Open frontend: http://localhost:3000/register.html
+Server running at http://localhost:3000
+Open frontend: http://localhost:3000/register.html
 ```
 
 ---
@@ -122,7 +122,7 @@ http://localhost:3000/register.html
 
 ---
 
-## 🔗 All Pages (URLs)
+##  All Pages (URLs)
 
 | Page                  | URL                                              |
 |-----------------------|--------------------------------------------------|
@@ -139,7 +139,7 @@ http://localhost:3000/register.html
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Method | Endpoint              | Description                        |
 |--------|-----------------------|------------------------------------|
@@ -156,7 +156,7 @@ http://localhost:3000/register.html
 
 ---
 
-## 👤 User Flow
+## User Flow
 
 ### Faculty:
 1. Register at `/register.html`
@@ -175,7 +175,7 @@ http://localhost:3000/register.html
 
 ---
 
-## ⚠️ Common Issues & Fixes
+## Common Issues & Fixes
 
 | Problem                         | Fix                                                    |
 |---------------------------------|--------------------------------------------------------|
