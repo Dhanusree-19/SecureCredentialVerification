@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Faculty Details</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Admin Panel &nbsp;|&nbsp; Faculty Details
+      <span style="margin-left:auto; cursor:pointer;" onclick="window.location.href='admin-dashboard.html'">
+        ← Back to Dashboard
+      </span>
+    </div>
+
+    <div class="container">
+      <div class="card card-wide">
+        <div id="content">
+          <p style="color:#888; text-align:center;">Loading faculty details...</p>
+        </div>
+
+        <!-- FIX Issue 1:
+             Remarks textarea and action buttons are placed OUTSIDE renderProfile().
+             Previously they were rendered inside innerHTML which caused onclick="takeAction()"
+             to break after loadDetails() re-rendered the page (function reference lost).
+             Fix: put the action form in static HTML, show/hide with JS. -->
+        <div id="actionSection" style="display:none;">
+          <div class="section-title">Admin Actions</div>
+
+          <div class="form-group">
+            <label>Remarks (required for rejection, optional for verify)</label>
+            <textarea id="remarks" placeholder="Enter remarks here..."></textarea>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="takeAction('VERIFIED')">
+              Verify Faculty
+            </button>
+            <button class="btn btn-danger" onclick="takeAction('REJECTED')">
+              Reject Faculty
+            </button>
+          </div>
+
+          <div id="actionMsg" class="message" style="margin-top:16px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const admin = JSON.parse(localStorage.getItem("admin") || "null");
+      if (!admin) window.location.href = "admin-login.html";
+
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("userId");
+
+      if (!userId) {
+        document.getElementById("content").innerHTML =
+          `<p style="color:red;">No faculty ID provided.</p>`;
+      } else {
+        loadDetails();
+      }
+
+      async function loadDetails() {
+        try {
+          const res = await fetch("/api/faculty/" + userId);
+          if (res.ok) {
+            const profile = await res.json();
+            renderProfile(profile);
+            // Show the action section after profile loads
+            document.getElementById("actionSection").style.display = "block";
+          } else {
+            document.getElementById("content").innerHTML =
+              `<p style="color:red;">Faculty not found.</p>`;
+          }
+        } catch (e) {
+          document.getElementById("content").innerHTML =
+            `<p style="color:red;">Server error.</p>`;
+        }
+      }
+
+      function renderProfile(p) {
+        const docs = p.documents || {};
+        const baseUrl = "/uploads/";
+
+        function docLink(filename, label) {
+          if (!filename) return `<span style="color:#aaa;">Not uploaded</span>`;
+          const url = baseUrl + filename;
+          const ext = filename.split(".").pop().toLowerCase();
+          if (["jpg", "jpeg", "png"].includes(ext)) {
+            return `
+              <a href="${url}" target="_blank" class="doc-link">📎 View ${label}</a><br/>
+              <img src="${url}" style="max-width:220px; margin-top:6px; border:1px solid #ddd; border-radius:4px;" />
+            `;
+          } else {
+            return `<a href="${url}" target="_blank" class="doc-link">📄 Open ${label} (PDF)</a>`;
+          }
+        }
+
+        const badgeClass = `badge-${(p.status || "pending").toLowerCase()}`;
+
+        document.getElementById("content").innerHTML = `
+          <h2 style="color:#1a73e8; margin-bottom:4px;">${p.name || "-"}</h2>
+          <p style="color:#888; margin-bottom:20px;">${p.email || "-"}</p>
+
+          <div class="section-title">Personal Information</div>
+          <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value">${p.phone || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">Department</span><span class="detail-value">${p.department || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">Designation</span><span class="detail-value">${p.designation || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">University</span><span class="detail-value">${p.university || "-"}</span></div>
+
+          <div class="section-title">Academic Qualification</div>
+          <div class="detail-row"><span class="detail-label">Highest Qualification</span><span class="detail-value">${p.highestQualification || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">University (Qualification)</span><span class="detail-value">${p.universityName || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">Year of Completion</span><span class="detail-value">${p.yearOfCompletion || "-"}</span></div>
+          <div class="detail-row"><span class="detail-label">Specialization</span><span class="detail-value">${p.specialization || "-"}</span></div>
+
+          <div class="section-title">Uploaded Documents</div>
+          <div style="margin-bottom:14px;">
+            <strong style="font-size:13px;">Degree Certificate</strong><br/>
+            ${docLink(docs.degreeCertificate, "Degree Certificate")}
+          </div>
+          <div style="margin-bottom:14px;">
+            <strong style="font-size:13px;">ID Proof</strong><br/>
+            ${docLink(docs.idProof, "ID Proof")}
+          </div>
+          <div style="margin-bottom:14px;">
+            <strong style="font-size:13px;">Experience Certificate</strong><br/>
+            ${docLink(docs.experienceCertificate, "Experience Certificate")}
+          </div>
+
+          <div class="section-title">Current Status</div>
+          <p style="margin-bottom:8px;">
+            <span class="badge ${badgeClass}">${p.status || "PENDING"}</span>
+            ${p.remarks ? `<span style="margin-left:12px; font-size:13px; color:#c62828;">Remarks: ${p.remarks}</span>` : ""}
+          </p>
+        `;
+      }
+
+      // FIX Issue 1:
+      // takeAction is now a top-level function (outside renderProfile).
+      // Before, it was defined inside renderProfile's template string scope,
+      // which caused "takeAction is not defined" after innerHTML re-render.
+      async function takeAction(action) {
+        const remarks = document.getElementById("remarks").value.trim();
+
+        if (action === "REJECTED" && !remarks) {
+          showActionMsg("Please enter remarks before rejecting.", "error");
+          return;
+        }
+
+        // Disable buttons while request is in progress
+        document.querySelectorAll(".btn-success, .btn-danger").forEach(b => b.disabled = true);
+        showActionMsg("Processing...", "success");
+
+        try {
+          const res = await fetch("/api/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, action, remarks }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            showActionMsg(data.message + " Email notification sent.", "success");
+            // Reload the profile section to show updated status
+            setTimeout(() => loadDetails(), 1500);
+          } else {
+            showActionMsg(data.message, "error");
+            document.querySelectorAll(".btn-success, .btn-danger").forEach(b => b.disabled = false);
+          }
+        } catch (e) {
+          showActionMsg("Server error. Check backend is running.", "error");
+          document.querySelectorAll(".btn-success, .btn-danger").forEach(b => b.disabled = false);
+        }
+      }
+
+      function showActionMsg(text, type) {
+        const el = document.getElementById("actionMsg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1775440445790",
+    "name": "sree",
+    "email": "sree@gmail.com",
+    "password": "$2a$10$7g47S2NlhwA62HR4cj1B5eNlNFn4/jTj.WTooF2lhvdUDKL/eQtvq",
+    "role": "FACULTY"
+  },
+  {
+    "id": "1775440635425",
+    "name": "Dhanu",
+    "email": "admin@faculty.com",
+    "password": "$2a$10$wcqTefXia/RafLlYchJPae.KOAcHldYDS.KiyR48TIkGUCH1nQdtS",
+    "role": "ADMIN"
+  },
+  {
+    "id": "1775440714671",
+    "name": "Dhanu",
+    "email": "dhanudhanu1903@gmail.com",
+    "password": "$2a$10$.Gt9.NUH5TVhTN8t0X62Lu1UvNRaG9LTfYx0wNOTaHl.whnrrpxlq",
+    "role": "FACULTY"
+  }
+]

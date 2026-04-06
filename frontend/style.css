@@ -1,0 +1,280 @@
+/* ── Reset & Base ──────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f4f8;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* ── Top Navbar ────────────────────────────────────────── */
+.navbar {
+  background-color: #1a73e8;
+  color: white;
+  padding: 14px 24px;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar span {
+  font-size: 22px;
+}
+
+/* ── Page Container ────────────────────────────────────── */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  min-height: calc(100vh - 60px);
+}
+
+/* ── Card ──────────────────────────────────────────────── */
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.card-wide {
+  max-width: 800px;
+}
+
+.card h2 {
+  text-align: center;
+  color: #1a73e8;
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.card p.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* ── Form Elements ─────────────────────────────────────── */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #1a73e8;
+  outline: none;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── Buttons ───────────────────────────────────────────── */
+.btn {
+  display: inline-block;
+  padding: 11px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background-color: #1a73e8;
+  color: white;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background-color: #1558b0;
+}
+
+.btn-success {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #1b5e20;
+}
+
+.btn-danger {
+  background-color: #c62828;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #8e0000;
+}
+
+.btn-sm {
+  padding: 7px 16px;
+  font-size: 13px;
+}
+
+/* ── Messages ──────────────────────────────────────────── */
+.message {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: none;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* ── Link Row ──────────────────────────────────────────── */
+.link-row {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.link-row a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-row a:hover {
+  text-decoration: underline;
+}
+
+/* ── Table ─────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+table th {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+table tr:hover {
+  background-color: #f5f9ff;
+}
+
+/* ── Status Badges ─────────────────────────────────────── */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.badge-pending {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.badge-verified {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-rejected {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* ── Document Links ────────────────────────────────────── */
+.doc-link {
+  display: inline-block;
+  margin: 4px 0;
+  color: #1a73e8;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Section divider ───────────────────────────────────── */
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a73e8;
+  border-bottom: 2px solid #e3f0ff;
+  padding-bottom: 6px;
+  margin: 24px 0 14px;
+}
+
+/* ── Detail Row ────────────────────────────────────────── */
+.detail-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 180px;
+}
+
+.detail-value {
+  color: #222;
+}

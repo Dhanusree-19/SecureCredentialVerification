@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verification Status</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Secure Faculty Verification &nbsp;|&nbsp;
+      <span style="font-size:14px; font-weight:normal;" id="welcomeText"></span>
+      <span style="margin-left:auto; cursor:pointer;" onclick="logout()">Logout 🚪</span>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Verification Status</h2>
+        <p class="subtitle">Current status of your credential verification</p>
+
+        <div id="statusBox" style="text-align:center; padding: 30px 0;">
+          <p style="color:#888;">Loading status...</p>
+        </div>
+
+        <div id="remarksBox" style="display:none; margin-top:16px;">
+          <div class="section-title">Admin Remarks</div>
+          <p id="remarksText" style="font-size:14px; color:#555; padding:10px; background:#fff8f8; border-radius:6px; border:1px solid #ffcdd2;"></p>
+        </div>
+
+        <div style="margin-top:24px; text-align:center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <a href="profile.html" class="btn btn-primary" style="width:auto;">
+            Edit Profile
+          </a>
+          <a href="upload.html" class="btn btn-primary" style="width:auto; background:#555;">
+            Re-upload Documents
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user) window.location.href = "login.html";
+
+      document.getElementById("welcomeText").textContent = "Welcome, " + user.name;
+
+      window.onload = async function () {
+        try {
+          const res = await fetch("/api/profile/" + user.id);
+          if (res.ok) {
+            const profile = await res.json();
+            renderStatus(profile);
+          } else {
+            document.getElementById("statusBox").innerHTML =
+              `<p style="color:#888;">No profile found. <a href="profile.html">Complete your profile first.</a></p>`;
+          }
+        } catch (e) {
+          document.getElementById("statusBox").innerHTML =
+            `<p style="color:red;">Could not fetch status. Make sure backend is running.</p>`;
+        }
+      };
+
+      function renderStatus(profile) {
+        const status = profile.status || "PENDING";
+        const icons = { PENDING: "⏳", VERIFIED: "✅", REJECTED: "❌" };
+        const colors = { PENDING: "#e65100", VERIFIED: "#2e7d32", REJECTED: "#c62828" };
+        const messages = {
+          PENDING: "Your verification is pending review by the admin.",
+          VERIFIED: "Congratulations! Your credentials have been verified.",
+          REJECTED: "Your credentials were rejected. Please check the remarks and re-upload.",
+        };
+
+        document.getElementById("statusBox").innerHTML = `
+          <div style="font-size:60px; margin-bottom:12px;">${icons[status]}</div>
+          <div class="badge badge-${status.toLowerCase()}" style="font-size:16px; padding:8px 20px;">
+            ${status}
+          </div>
+          <p style="margin-top:16px; color:#555; font-size:14px;">${messages[status]}</p>
+        `;
+
+        if (status === "REJECTED" && profile.remarks) {
+          document.getElementById("remarksBox").style.display = "block";
+          document.getElementById("remarksText").textContent = profile.remarks;
+        }
+      }
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

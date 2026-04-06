@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload Documents</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Secure Faculty Verification &nbsp;|&nbsp;
+      <span style="font-size:14px; font-weight:normal;" id="welcomeText"></span>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Upload Your Documents</h2>
+        <p class="subtitle">
+          Accepted formats: PDF, JPG, PNG only
+        </p>
+
+        <div id="msg" class="message"></div>
+
+        <div class="form-group">
+          <label>Degree Certificate <span style="color:red">*</span></label>
+          <input
+            type="file"
+            id="degreeCertificate"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>ID Proof <span style="color:red">*</span></label>
+          <input
+            type="file"
+            id="idProof"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Experience Certificate</label>
+          <input
+            type="file"
+            id="experienceCertificate"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </div>
+
+        <p style="font-size:13px; color:#888; margin-bottom:16px;">
+          * Degree Certificate and ID Proof are mandatory.
+        </p>
+
+        <button class="btn btn-primary" onclick="uploadDocs()">
+          Submit Documents
+        </button>
+
+        <div class="link-row" style="margin-top:16px;">
+          <a href="status.html">← Check my verification status</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user) window.location.href = "login.html";
+
+      document.getElementById("welcomeText").textContent = "Welcome, " + user.name;
+
+      async function uploadDocs() {
+        const degree = document.getElementById("degreeCertificate").files[0];
+        const idProof = document.getElementById("idProof").files[0];
+        const exp = document.getElementById("experienceCertificate").files[0];
+
+        if (!degree || !idProof) {
+          showMsg("Degree Certificate and ID Proof are required.", "error");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("userId", user.id);
+        formData.append("degreeCertificate", degree);
+        formData.append("idProof", idProof);
+        if (exp) formData.append("experienceCertificate", exp);
+
+        try {
+          showMsg("Uploading... please wait.", "success");
+
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            showMsg("Documents uploaded successfully!", "success");
+            setTimeout(() => (window.location.href = "status.html"), 1500);
+          } else {
+            showMsg(data.message, "error");
+          }
+        } catch (err) {
+          showMsg("Upload failed. Make sure backend is running.", "error");
+        }
+      }
+
+      function showMsg(text, type) {
+        const el = document.getElementById("msg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Profile</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Secure Faculty Verification &nbsp;|&nbsp;
+      <span style="font-size:14px; font-weight:normal;" id="welcomeText"></span>
+    </div>
+
+    <div class="container">
+      <div class="card card-wide">
+        <h2>Complete Your Profile</h2>
+        <p class="subtitle">Fill in your academic and personal details</p>
+
+        <div id="msg" class="message"></div>
+
+        <div class="section-title">Personal Information</div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Full name" />
+          </div>
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Phone Number</label>
+            <input type="text" id="phone" placeholder="Phone number" />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Department</label>
+            <input type="text" id="department" placeholder="e.g. Computer Science" />
+          </div>
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Designation</label>
+            <input type="text" id="designation" placeholder="e.g. Assistant Professor" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>University (Selected)</label>
+          <input type="text" id="university" readonly style="background:#f5f5f5;" />
+        </div>
+
+        <div class="section-title">Academic Qualification</div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Highest Qualification</label>
+            <select id="highestQualification">
+              <option value="">-- Select --</option>
+              <option value="B.E / B.Tech">B.E / B.Tech</option>
+              <option value="M.E / M.Tech">M.E / M.Tech</option>
+              <option value="M.Sc">M.Sc</option>
+              <option value="MBA">MBA</option>
+              <option value="Ph.D">Ph.D</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>University Name (Qualification)</label>
+            <input type="text" id="universityName" placeholder="University where you studied" />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Year of Completion</label>
+            <input type="text" id="yearOfCompletion" placeholder="e.g. 2020" />
+          </div>
+          <div class="form-group" style="flex:1; min-width:200px;">
+            <label>Specialization</label>
+            <input type="text" id="specialization" placeholder="e.g. Machine Learning" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveProfile()">
+          Save & Continue →
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user) window.location.href = "login.html";
+
+      document.getElementById("welcomeText").textContent = "Welcome, " + user.name;
+
+      // Pre-fill university from previous page
+      const uni = localStorage.getItem("selectedUniversity") || "";
+      document.getElementById("university").value = uni;
+
+      // Load existing profile if any
+      window.onload = async function () {
+        try {
+          const res = await fetch("/api/profile/" + user.id);
+          if (res.ok) {
+            const profile = await res.json();
+            document.getElementById("name").value = profile.name || user.name;
+            document.getElementById("phone").value = profile.phone || "";
+            document.getElementById("department").value = profile.department || "";
+            document.getElementById("designation").value = profile.designation || "";
+            document.getElementById("highestQualification").value = profile.highestQualification || "";
+            document.getElementById("universityName").value = profile.universityName || "";
+            document.getElementById("yearOfCompletion").value = profile.yearOfCompletion || "";
+            document.getElementById("specialization").value = profile.specialization || "";
+          }
+        } catch (e) {
+          // No profile yet, that's fine
+        }
+      };
+
+      async function saveProfile() {
+        const body = {
+          userId: user.id,
+          name: document.getElementById("name").value.trim(),
+          email: user.email,
+          phone: document.getElementById("phone").value.trim(),
+          department: document.getElementById("department").value.trim(),
+          designation: document.getElementById("designation").value.trim(),
+          university: document.getElementById("university").value.trim(),
+          highestQualification: document.getElementById("highestQualification").value,
+          universityName: document.getElementById("universityName").value.trim(),
+          yearOfCompletion: document.getElementById("yearOfCompletion").value.trim(),
+          specialization: document.getElementById("specialization").value.trim(),
+        };
+
+        if (!body.name || !body.department || !body.designation) {
+          showMsg("Please fill in Name, Department and Designation.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            showMsg("Profile saved! Redirecting to document upload...", "success");
+            setTimeout(() => (window.location.href = "upload.html"), 1500);
+          } else {
+            showMsg(data.message, "error");
+          }
+        } catch (err) {
+          showMsg("Server error.", "error");
+        }
+      }
+
+      function showMsg(text, type) {
+        const el = document.getElementById("msg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

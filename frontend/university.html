@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Choose University</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Secure Faculty Verification
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Select Your University</h2>
+        <p class="subtitle">Choose the university you are affiliated with</p>
+
+        <div id="msg" class="message"></div>
+
+        <div class="form-group">
+          <label>University</label>
+          <select id="universitySelect" onchange="handleSelect()">
+            <option value="">-- Select University --</option>
+            <option value="Anna University">Anna University</option>
+            <option value="IIT Madras">IIT Madras</option>
+            <option value="IIT Bombay">IIT Bombay</option>
+            <option value="Delhi University">Delhi University</option>
+            <option value="Bangalore University">Bangalore University</option>
+            <option value="Osmania University">Osmania University</option>
+            <option value="Pune University">Pune University</option>
+            <option value="other">Other (Type manually)</option>
+          </select>
+        </div>
+
+        <!-- Show this only if "Other" is selected -->
+        <div class="form-group" id="otherGroup" style="display: none">
+          <label>Type Your University Name</label>
+          <input
+            type="text"
+            id="otherUniversity"
+            placeholder="Enter university name"
+          />
+        </div>
+
+        <button class="btn btn-primary" onclick="proceed()">
+          Continue →
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Check login
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user) {
+        window.location.href = "login.html";
+      }
+
+      function handleSelect() {
+        const val = document.getElementById("universitySelect").value;
+        const otherGroup = document.getElementById("otherGroup");
+        if (val === "other") {
+          otherGroup.style.display = "block";
+        } else {
+          otherGroup.style.display = "none";
+        }
+      }
+
+      function proceed() {
+        const select = document.getElementById("universitySelect").value;
+        const other = document.getElementById("otherUniversity").value.trim();
+
+        if (!select) {
+          showMsg("Please select a university.", "error");
+          return;
+        }
+
+        let university = select === "other" ? other : select;
+
+        if (select === "other" && !other) {
+          showMsg("Please type your university name.", "error");
+          return;
+        }
+
+        // Save selected university
+        localStorage.setItem("selectedUniversity", university);
+        window.location.href = "profile.html";
+      }
+
+      function showMsg(text, type) {
+        const el = document.getElementById("msg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

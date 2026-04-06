@@ -1,0 +1,22 @@
+# Node modules
+backend/node_modules/
+
+# Logs
+*.log
+
+# Environment variables (important for email credentials)
+backend/.env
+
+# Uploaded files (user documents)
+backend/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Package lock (optional)
+# backend/package-lock.json

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Admin Panel — Secure Faculty Verification
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Admin Login</h2>
+        <p class="subtitle">Sign in to the admin panel</p>
+
+        <div id="msg" class="message"></div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="Admin email" />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Password" />
+        </div>
+
+        <button class="btn btn-primary" onclick="login()">Login as Admin</button>
+
+        <div class="link-row">
+          Don't have an account? <a href="admin-register.html">Register here</a>
+        </div>
+        <div class="link-row" style="margin-top:10px;">
+          Are you faculty? <a href="login.html">Faculty Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          showMsg("Please enter email and password.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            localStorage.setItem("admin", JSON.stringify(data.user));
+            showMsg("Login successful! Redirecting...", "success");
+            setTimeout(() => (window.location.href = "admin-dashboard.html"), 1200);
+          } else {
+            showMsg(data.message, "error");
+          }
+        } catch (err) {
+          showMsg("Server error. Make sure backend is running.", "error");
+        }
+      }
+
+      function showMsg(text, type) {
+        const el = document.getElementById("msg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

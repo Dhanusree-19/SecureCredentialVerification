@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Admin Dashboard &nbsp;|&nbsp;
+      <span style="font-size:14px; font-weight:normal;" id="adminName"></span>
+      <span style="margin-left:auto; cursor:pointer;" onclick="logout()">Logout 🚪</span>
+    </div>
+
+    <div class="container">
+      <div class="card card-wide">
+        <h2>Faculty Verification Dashboard</h2>
+        <p class="subtitle">Filter faculty by university and take action</p>
+
+        <!-- University Filter -->
+        <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:flex-end;">
+          <div class="form-group" style="flex:1; min-width:200px; margin-bottom:0;">
+            <label>Filter by University</label>
+            <select id="uniFilter">
+              <option value="">-- All Universities --</option>
+              <option value="Anna University">Anna University</option>
+              <option value="IIT Madras">IIT Madras</option>
+              <option value="IIT Bombay">IIT Bombay</option>
+              <option value="Delhi University">Delhi University</option>
+              <option value="Bangalore University">Bangalore University</option>
+              <option value="Osmania University">Osmania University</option>
+              <option value="Pune University">Pune University</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:auto;" onclick="loadFaculty()">
+            Search
+          </button>
+          <button class="btn btn-primary" style="width:auto; background:#555;" onclick="loadAll()">
+            Show All
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div id="tableContainer">
+          <p style="color:#888; text-align:center;">Select a university and click Search, or click Show All.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const admin = JSON.parse(localStorage.getItem("admin") || "null");
+      if (!admin) window.location.href = "admin-login.html";
+
+      document.getElementById("adminName").textContent = "Welcome, " + admin.name;
+
+      async function loadFaculty() {
+        const uni = document.getElementById("uniFilter").value;
+        const url = uni ? `/api/faculty-list?university=${encodeURIComponent(uni)}` : "/api/faculty-list";
+        fetchAndRender(url);
+      }
+
+      async function loadAll() {
+        fetchAndRender("/api/faculty-list");
+      }
+
+      async function fetchAndRender(url) {
+        try {
+          const res = await fetch(url);
+          const list = await res.json();
+          renderTable(list);
+        } catch (e) {
+          document.getElementById("tableContainer").innerHTML =
+            `<p style="color:red;">Could not load faculty list.</p>`;
+        }
+      }
+
+      function renderTable(list) {
+        const container = document.getElementById("tableContainer");
+
+        if (!list.length) {
+          container.innerHTML = `<p style="color:#888; text-align:center;">No faculty found for this selection.</p>`;
+          return;
+        }
+
+        let rows = list
+          .map(
+            (f) => `
+          <tr>
+            <td>${f.name || "-"}</td>
+            <td>${f.email || "-"}</td>
+            <td>${f.university || "-"}</td>
+            <td>${f.department || "-"}</td>
+            <td><span class="badge badge-${(f.status || "pending").toLowerCase()}">${f.status || "PENDING"}</span></td>
+            <td>
+              <a href="faculty-details.html?userId=${f.userId}" class="btn btn-primary btn-sm">
+                View Details
+              </a>
+            </td>
+          </tr>`
+          )
+          .join("");
+
+        container.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>University</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <p style="margin-top:12px; font-size:13px; color:#888;">Total: ${list.length} faculty found.</p>
+        `;
+      }
+
+      function logout() {
+        localStorage.removeItem("admin");
+        window.location.href = "admin-login.html";
+      }
+
+      // Load all on start
+      loadAll();
+    </script>
+  </body>
+</html>

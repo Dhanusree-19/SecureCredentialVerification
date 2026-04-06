@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Faculty Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <span></span> Secure Faculty Verification
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <h2>Faculty Login</h2>
+        <p class="subtitle">Sign in to your account</p>
+
+        <div id="msg" class="message"></div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your password" />
+        </div>
+
+        <button class="btn btn-primary" onclick="login()">Login</button>
+
+        <div class="link-row">
+          Don't have an account? <a href="register.html">Register here</a>
+        </div>
+        <div class="link-row" style="margin-top:10px;">
+          Are you an Admin? <a href="admin-login.html">Admin Login</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          showMsg("Please enter email and password.", "error");
+          return;
+        }
+
+        try {
+          // Step 1: Login
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            showMsg(data.message, "error");
+            return;
+          }
+
+          // Save user to localStorage
+          localStorage.setItem("user", JSON.stringify(data.user));
+          showMsg("Login successful! Checking profile...", "success");
+
+          // FIX Issue 2:
+          // Step 2: Check if profile already exists
+          // OLD CODE always redirected to university.html (forced them to fill profile again)
+          // FIX: call /api/profile-check → if exists go to status.html, else go to university.html
+          const checkRes = await fetch("/api/profile-check/" + data.user.id);
+          const checkData = await checkRes.json();
+
+          if (checkData.exists) {
+            // Profile already exists → go straight to status page
+            setTimeout(() => (window.location.href = "status.html"), 1000);
+          } else {
+            // No profile yet → go through setup flow
+            setTimeout(() => (window.location.href = "university.html"), 1000);
+          }
+
+        } catch (err) {
+          showMsg("Server error. Make sure backend is running.", "error");
+        }
+      }
+
+      function showMsg(text, type) {
+        const el = document.getElementById("msg");
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+      }
+    </script>
+  </body>
+</html>
